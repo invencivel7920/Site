@@ -1,12 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mr.WPNZ</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
   body {
     margin: 0;
     font-family: 'Press Start 2P', cursive;
@@ -17,7 +17,7 @@
 
   header {
     text-align: center;
-    padding: 50px 20px 20px 20px;
+    padding: 50px 20px 20px;
     background: #111;
     border-bottom: 2px solid #ff4fa0;
   }
@@ -105,7 +105,6 @@
 
 <section id="contato">
   <h2>Contato</h2>
-  <p>Você pode me achar por aí:</p>
   <ul>
     <li>Discord: Mr.WPNZ#7920</li>
     <li>GitHub: <a href="https://github.com/invencivel7920" target="_blank">invencivel7920</a></li>
@@ -117,85 +116,98 @@
 </footer>
 
 <script>
-// Troca de seção
-function showSection(id){
+// Navegação entre seções
+function showSection(id) {
   document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-// Partículas de fundo
+// Configuração do canvas de partículas
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let particles = [];
 const mouse = { x: null, y: null };
+const particles = [];
 
+// Classe Partícula
 class Particle {
-  constructor(){
+  constructor() {
     this.x = Math.random() * canvas.width;
     this.y = Math.random() * canvas.height;
     this.size = 2 + Math.random() * 2;
-    this.speedX = (Math.random()-0.5)*1.5;
-    this.speedY = (Math.random()-0.5)*1.5;
+    this.speedX = (Math.random() - 0.5) * 1.5;
+    this.speedY = (Math.random() - 0.5) * 1.5;
   }
-  update(){
+  update() {
     this.x += this.speedX;
     this.y += this.speedY;
-    if(this.x<0||this.x>canvas.width)this.speedX*=-1;
-    if(this.y<0||this.y>canvas.height)this.speedY*=-1;
+    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
     this.draw();
   }
-  draw(){
+  draw() {
     ctx.beginPath();
-    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fillStyle = "rgba(200,200,200,0.7)";
     ctx.fill();
   }
 }
 
-for(let i=0;i<120;i++) particles.push(new Particle());
+// Inicializa partículas
+for (let i = 0; i < 120; i++) particles.push(new Particle());
 
-function connect(){
-  for(let a=0;a<particles.length;a++){
-    for(let b=a;b<particles.length;b++){
-      let dx = particles[a].x - particles[b].x;
-      let dy = particles[a].y - particles[b].y;
-      let dist = Math.sqrt(dx*dx + dy*dy);
-      if(dist<120){
+// Função para conectar partículas
+function connect() {
+  particles.forEach((a, i) => {
+    for (let j = i; j < particles.length; j++) {
+      const b = particles[j];
+      const dx = a.x - b.x;
+      const dy = a.y - b.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 120) {
         ctx.beginPath();
-        ctx.strokeStyle=`rgba(200,200,200,${1-dist/120})`;
-        ctx.moveTo(particles[a].x,particles[a].y);
-        ctx.lineTo(particles[b].x,particles[b].y);
+        ctx.strokeStyle = `rgba(200,200,200,${1 - dist / 120})`;
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
         ctx.stroke();
       }
     }
-    if(mouse.x!==null && mouse.y!==null){
-      let dxm = particles[a].x - mouse.x;
-      let dym = particles[a].y - mouse.y;
-      let distm = Math.sqrt(dxm*dxm + dym*dym);
-      if(distm<150){
+    if (mouse.x !== null && mouse.y !== null) {
+      const dxm = a.x - mouse.x;
+      const dym = a.y - mouse.y;
+      const distm = Math.sqrt(dxm * dxm + dym * dym);
+      if (distm < 150) {
         ctx.beginPath();
-        ctx.strokeStyle=`rgba(255,79,160,${1-distm/150})`;
-        ctx.moveTo(particles[a].x,particles[a].y);
-        ctx.lineTo(mouse.x,mouse.y);
+        ctx.strokeStyle = `rgba(255,79,160,${1 - distm / 150})`;
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(mouse.x, mouse.y);
         ctx.stroke();
       }
     }
-  }
+  });
 }
 
-function animate(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  particles.forEach(p=>p.update());
+// Loop de animação
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles.forEach(p => p.update());
   connect();
   requestAnimationFrame(animate);
 }
 animate();
 
-window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight});
-window.addEventListener('mousemove', e=>{mouse.x=e.x; mouse.y=e.y});
+// Eventos
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+window.addEventListener('mousemove', e => {
+  mouse.x = e.x;
+  mouse.y = e.y;
+});
 </script>
 
 </body>
