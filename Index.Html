@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr.WPNZ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  body {
+    margin: 0;
+    font-family: 'Press Start 2P', cursive;
+    background: #0f0f0f;
+    color: #fff;
+    overflow-x: hidden;
+  }
+
+  header {
+    text-align: center;
+    padding: 50px 20px 20px 20px;
+    background: #111;
+    border-bottom: 2px solid #ff4fa0;
+  }
+
+  header h1 {
+    font-size: 2em;
+    color: #ff4fa0;
+  }
+
+  header p {
+    font-size: 1em;
+    color: #ccc;
+  }
+
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  nav button {
+    background: #222;
+    color: #fff;
+    border: 2px solid #ff4fa0;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  nav button:hover {
+    background: #ff4fa0;
+    color: #111;
+  }
+
+  section {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    display: none;
+  }
+
+  section.active {
+    display: block;
+  }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    background: #111;
+    border-top: 2px solid #ff4fa0;
+  }
+
+  canvas#particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+
+  a {
+    color: #ff4fa0;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<header>
+  <h1>Mr.WPNZ</h1>
+  <p>invencivel7920 · he/him · Just a dumb profile for a dumb person</p>
+</header>
+
+<nav>
+  <button onclick="showSection('sobre')">Sobre</button>
+  <button onclick="showSection('contato')">Contato</button>
+</nav>
+
+<section id="sobre" class="active">
+  <h2>Sobre Mim</h2>
+  <p>Oi! Eu sou Mr.WPNZ, também conhecido como invencivel7920. Curto tecnologia, games e programação. Não levo a vida muito a sério, mas tento fazer coisas legais.</p>
+</section>
+
+<section id="contato">
+  <h2>Contato</h2>
+  <p>Você pode me achar por aí:</p>
+  <ul>
+    <li>Discord: Mr.WPNZ#7920</li>
+    <li>GitHub: <a href="https://github.com/invencivel7920" target="_blank">invencivel7920</a></li>
+  </ul>
+</section>
+
+<footer>
+  © 2025 Mr.WPNZ
+</footer>
+
+<script>
+// Troca de seção
+function showSection(id){
+  document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// Partículas de fundo
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+const mouse = { x: null, y: null };
+
+class Particle {
+  constructor(){
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = 2 + Math.random() * 2;
+    this.speedX = (Math.random()-0.5)*1.5;
+    this.speedY = (Math.random()-0.5)*1.5;
+  }
+  update(){
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if(this.x<0||this.x>canvas.width)this.speedX*=-1;
+    if(this.y<0||this.y>canvas.height)this.speedY*=-1;
+    this.draw();
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    ctx.fillStyle = "rgba(200,200,200,0.7)";
+    ctx.fill();
+  }
+}
+
+for(let i=0;i<120;i++) particles.push(new Particle());
+
+function connect(){
+  for(let a=0;a<particles.length;a++){
+    for(let b=a;b<particles.length;b++){
+      let dx = particles[a].x - particles[b].x;
+      let dy = particles[a].y - particles[b].y;
+      let dist = Math.sqrt(dx*dx + dy*dy);
+      if(dist<120){
+        ctx.beginPath();
+        ctx.strokeStyle=`rgba(200,200,200,${1-dist/120})`;
+        ctx.moveTo(particles[a].x,particles[a].y);
+        ctx.lineTo(particles[b].x,particles[b].y);
+        ctx.stroke();
+      }
+    }
+    if(mouse.x!==null && mouse.y!==null){
+      let dxm = particles[a].x - mouse.x;
+      let dym = particles[a].y - mouse.y;
+      let distm = Math.sqrt(dxm*dxm + dym*dym);
+      if(distm<150){
+        ctx.beginPath();
+        ctx.strokeStyle=`rgba(255,79,160,${1-distm/150})`;
+        ctx.moveTo(particles[a].x,particles[a].y);
+        ctx.lineTo(mouse.x,mouse.y);
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>p.update());
+  connect();
+  requestAnimationFrame(animate);
+}
+animate();
+
+window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight});
+window.addEventListener('mousemove', e=>{mouse.x=e.x; mouse.y=e.y});
+</script>
+
+</body>
+</html>
