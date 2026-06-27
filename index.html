@@ -19,6 +19,9 @@
     --text: #e8e8ea;
     --text-dim: #9b9ba3;
     --particle: 190, 190, 200;
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-lg: 18px;
   }
 
   * { box-sizing: border-box; }
@@ -45,9 +48,10 @@
   /* ---------- Cabeçalho ---------- */
   header {
     text-align: center;
-    padding: 56px 20px 28px;
+    padding: clamp(38px, 9vw, 56px) 20px clamp(20px, 5vw, 28px);
     background: linear-gradient(180deg, rgba(17,17,20,0.9), rgba(17,17,20,0.4));
-    border-bottom: 2px solid var(--accent);
+    border-bottom: 1px solid rgba(255, 79, 160, 0.4);
+    box-shadow: 0 6px 30px -12px rgba(255, 79, 160, 0.45);
   }
   header h1 {
     font-size: clamp(1.6em, 7vw, 2.6em);
@@ -81,12 +85,12 @@
     background: var(--panel);
     color: var(--text);
     border: 2px solid var(--accent-dim);
-    padding: 14px 18px;
+    padding: clamp(11px, 2.5vw, 14px) clamp(14px, 3vw, 18px);
     font-family: 'Pixelify Sans', monospace;
     font-weight: 600;
-    font-size: 0.85em;
+    font-size: clamp(0.7em, 2.2vw, 0.85em);
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: var(--radius);
     transition: 0.25s ease;
     position: relative;
   }
@@ -116,8 +120,8 @@
     color: #0a0a0d;
     font-weight: 600;
     font-size: 0.7em;
-    padding: 6px 10px;
-    border-radius: 4px;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
@@ -137,12 +141,12 @@
     background: transparent;
     color: var(--text-dim);
     border: 2px solid var(--secondary-dim);
-    padding: 10px 18px;
+    padding: clamp(9px, 2vw, 10px) clamp(14px, 3vw, 18px);
     font-family: 'Pixelify Sans', monospace;
     font-weight: 600;
-    font-size: 0.85em;
+    font-size: clamp(0.7em, 2.2vw, 0.85em);
     cursor: pointer;
-    border-radius: 6px;
+    border-radius: var(--radius);
     transition: 0.25s;
   }
   nav button:hover,
@@ -153,7 +157,7 @@
   section {
     max-width: 700px;
     margin: 0 auto;
-    padding: 24px;
+    padding: clamp(14px, 4vw, 24px);
     display: none;
   }
   section.active { display: block; animation: fadeIn 0.35s ease; }
@@ -163,8 +167,8 @@
   .card {
     background: var(--panel);
     border: 1px solid rgba(255,79,160,0.25);
-    border-radius: 8px;
-    padding: 24px;
+    border-radius: var(--radius-lg);
+    padding: clamp(18px, 4vw, 24px);
     backdrop-filter: blur(6px);
   }
   section h2 { color: var(--accent); font-size: 1em; margin-top: 0; }
@@ -201,26 +205,61 @@
 
   .repos-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 16px;
   }
   .repo-card {
+    position: relative;
+    display: block;
     background: var(--panel);
     border: 1px solid rgba(255,79,160,0.2);
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     padding: 18px;
     backdrop-filter: blur(6px);
     transition: 0.25s ease;
     font-family: system-ui, sans-serif;
+    overflow: hidden;
+    cursor: pointer;
   }
-  .repo-card:hover { border-color: var(--secondary); transform: translateY(-2px); }
+  .repo-card:hover,
+  .repo-card:focus-visible {
+    border-color: var(--secondary);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px -12px rgba(78, 255, 143, 0.35);
+  }
+  .repo-card:focus-visible { outline: 2px solid var(--secondary); outline-offset: 2px; }
   .repo-card h3 {
     margin: 0 0 8px;
     font-size: 0.95em;
     font-family: 'Pixelify Sans', monospace;
+    color: var(--text);
+    padding-right: 56px;
   }
-  .repo-card h3 a { color: var(--text); }
-  .repo-card h3 a:hover { color: var(--accent); }
+  .repo-card:hover h3 { color: var(--accent); }
+  .repo-lang-badge {
+    position: absolute;
+    top: 14px;
+    right: -4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--secondary);
+    color: #0a0a0d;
+    font-size: 0.68em;
+    font-weight: 600;
+    padding: 5px 10px 5px 12px;
+    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    opacity: 0;
+    transform: translateX(8px);
+    transition: 0.25s ease;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .repo-card:hover .repo-lang-badge,
+  .repo-card:focus-visible .repo-lang-badge {
+    opacity: 1;
+    transform: translateX(0);
+  }
   .repo-meta {
     display: flex;
     gap: 12px;
@@ -228,13 +267,6 @@
     color: var(--text-dim);
     margin-bottom: 10px;
     flex-wrap: wrap;
-  }
-  .lang-dot {
-    display: inline-block;
-    width: 9px; height: 9px;
-    border-radius: 50%;
-    background: var(--secondary);
-    margin-right: 5px;
   }
   .repo-desc {
     font-size: 0.78em;
@@ -246,9 +278,10 @@
     font-size: 0.74em;
     line-height: 1.7;
     color: var(--text);
-    border-top: 1px dashed rgba(255,255,255,0.12);
+    border-top: 1px dashed rgba(255,255,255,0.14);
     padding-top: 10px;
     white-space: pre-wrap;
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
   }
   .readme-preview.loading {
     color: var(--text-dim);
@@ -259,13 +292,64 @@
     .readme-preview.loading { animation: none; }
   }
 
-  /* ---------- Rodapé ---------- */
+  /* ---------- Frase de filósofo ---------- */
+  .philo-quote {
+    max-width: 640px;
+    margin: 22px auto 0;
+    padding: 16px 20px;
+    background: var(--panel);
+    border-left: 3px solid var(--secondary);
+    border-radius: var(--radius-sm);
+    font-family: system-ui, sans-serif;
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .philo-quote blockquote {
+    margin: 0;
+    font-size: 0.85em;
+    line-height: 1.6;
+    color: var(--text);
+    font-style: italic;
+  }
+  .philo-quote cite {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.8em;
+    color: var(--secondary);
+    font-style: normal;
+  }
+  .philo-refresh {
+    background: transparent;
+    border: 1px solid var(--secondary-dim);
+    color: var(--text-dim);
+    border-radius: var(--radius-sm);
+    width: 36px;
+    height: 36px;
+    font-size: 1em;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: 0.25s;
+  }
+  .philo-refresh:hover,
+  .philo-refresh:focus-visible {
+    color: var(--secondary);
+    border-color: var(--secondary);
+    transform: rotate(90deg);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .philo-refresh:hover { transform: none; }
+  }
   footer {
     text-align: center;
-    padding: 26px 16px;
+    padding: clamp(18px, 5vw, 26px) 16px;
     margin-top: 30px;
     background: rgba(17,17,20,0.7);
-    border-top: 2px solid var(--accent);
+    border-top: 1px solid rgba(255, 79, 160, 0.4);
+    box-shadow: 0 -6px 30px -16px rgba(255, 79, 160, 0.4);
     font-size: 0.6em;
     color: var(--text-dim);
   }
@@ -275,8 +359,11 @@
   }
 
   @media (max-width: 480px) {
-    .social-btn { font-size: 0.75em; padding: 12px 14px; }
-    nav button { font-size: 0.75em; padding: 9px 14px; }
+    .socials { gap: 10px; padding: 18px 12px 4px; }
+    nav { gap: 10px; margin: 26px 0 6px; }
+    .repos-stats { gap: 8px; }
+    .repo-card h3 { padding-right: 0; }
+    .repo-lang-badge { position: static; display: inline-flex; opacity: 1; transform: none; margin-bottom: 8px; border-radius: var(--radius-sm); }
   }
 </style>
 </head>
@@ -288,6 +375,11 @@
   <h1>Mr.WPNZ</h1>
   <p>invencivel7920 · he/him<br>Just a dumb profile for a dumb person</p>
 </header>
+
+<div class="philo-quote">
+  <blockquote id="philoText">Conhece-te a ti mesmo.<cite id="philoAuthor">— Sócrates</cite></blockquote>
+  <button class="philo-refresh" id="philoRefresh" type="button" aria-label="Nova frase">🔁</button>
+</div>
 
 <div class="socials">
   <a class="social-btn" href="https://instagram.com/aquil_esbatista" target="_blank" rel="noopener noreferrer">
@@ -338,6 +430,37 @@
 </footer>
 
 <script>
+// -----------------------
+// Frases de filósofos
+// -----------------------
+const PHILO_QUOTES = [
+  { text: 'Conhece-te a ti mesmo.', author: 'Sócrates' },
+  { text: 'Só sei que nada sei.', author: 'Sócrates' },
+  { text: 'Somos aquilo que repetidamente fazemos.', author: 'Aristóteles' },
+  { text: 'Ninguém se banha duas vezes no mesmo rio.', author: 'Heráclito' },
+  { text: 'Não estragues o que tens desejando o que não tens.', author: 'Epicuro' },
+  { text: 'Você tem poder sobre sua mente, não sobre eventos externos.', author: 'Marco Aurélio' },
+  { text: 'Enquanto esperamos pela vida, a vida passa.', author: 'Sêneca' },
+  { text: 'Não importa quão lentamente você vá, desde que não pare.', author: 'Confúcio' },
+  { text: 'Uma jornada de mil quilômetros começa com um único passo.', author: 'Lao-Tsé' },
+  { text: 'Tenho necessidade de pouco, e do pouco que tenho, necessito muito pouco.', author: 'Diógenes' },
+  { text: 'Educai as crianças e não será preciso punir os homens.', author: 'Pitágoras' },
+  { text: 'A mente é tudo. Em que você pensa, você se torna.', author: 'Buda' }
+];
+let lastQuoteIndex = -1;
+
+function showRandomQuote() {
+  let i;
+  do { i = Math.floor(Math.random() * PHILO_QUOTES.length); } while (i === lastQuoteIndex && PHILO_QUOTES.length > 1);
+  lastQuoteIndex = i;
+  const q = PHILO_QUOTES[i];
+  document.getElementById('philoText').firstChild.textContent = q.text;
+  document.getElementById('philoAuthor').textContent = `— ${q.author}`;
+}
+
+document.getElementById('philoRefresh').addEventListener('click', showRandomQuote);
+showRandomQuote();
+
 // -----------------------
 // Panorama de repositórios públicos (API do GitHub)
 // -----------------------
@@ -414,16 +537,16 @@ async function loadRepos() {
     statusEl.textContent = '';
 
     gridEl.innerHTML = featured.map(repo => `
-      <article class="repo-card">
-        <h3><a href="${repo.html_url}" target="_blank" rel="noopener noreferrer">${escapeHtml(repo.name)}</a></h3>
+      <a class="repo-card" href="${repo.html_url}" target="_blank" rel="noopener noreferrer">
+        ${repo.language ? `<span class="repo-lang-badge">${escapeHtml(repo.language)}</span>` : ''}
+        <h3>${escapeHtml(repo.name)}</h3>
         <div class="repo-meta">
-          ${repo.language ? `<span><span class="lang-dot"></span>${escapeHtml(repo.language)}</span>` : ''}
           <span>⭐ ${repo.stargazers_count}</span>
           <span>🍴 ${repo.forks_count}</span>
         </div>
         ${repo.description ? `<p class="repo-desc">${escapeHtml(repo.description)}</p>` : ''}
         <div class="readme-preview loading" id="readme-${repo.id}">carregando readme…</div>
-      </article>
+      </a>
     `).join('');
 
     // Busca o início do README de cada repositório em paralelo
@@ -487,12 +610,16 @@ discordBtn.addEventListener('click', async () => {
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
 let dpr = Math.min(window.devicePixelRatio || 1, 2);
+let W = window.innerWidth;
+let H = window.innerHeight;
 
 function resizeCanvas() {
-  canvas.width = window.innerWidth * dpr;
-  canvas.height = window.innerHeight * dpr;
-  canvas.style.width = window.innerWidth + 'px';
-  canvas.style.height = window.innerHeight + 'px';
+  W = window.innerWidth;
+  H = window.innerHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 resizeCanvas();
@@ -500,14 +627,16 @@ resizeCanvas();
 const mouse = { x: null, y: null };
 const particles = [];
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const PARTICLE_COUNT = window.innerWidth < 600 ? 60 : 120;
+const PARTICLE_COUNT = window.innerWidth < 600 ? 55 : 110;
 const LINK_DIST = 120;
+const LINK_DIST_SQ = LINK_DIST * LINK_DIST;
 const MOUSE_DIST = 150;
+const MOUSE_DIST_SQ = MOUSE_DIST * MOUSE_DIST;
 
 class Particle {
   constructor() {
-    this.x = Math.random() * window.innerWidth;
-    this.y = Math.random() * window.innerHeight;
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
     this.size = 1.5 + Math.random() * 2;
     this.speedX = (Math.random() - 0.5) * 0.7;
     this.speedY = (Math.random() - 0.5) * 0.7;
@@ -515,8 +644,8 @@ class Particle {
   update() {
     this.x += this.speedX;
     this.y += this.speedY;
-    if (this.x < 0 || this.x > window.innerWidth) this.speedX *= -1;
-    if (this.y < 0 || this.y > window.innerHeight) this.speedY *= -1;
+    if (this.x < 0 || this.x > W) this.speedX *= -1;
+    if (this.y < 0 || this.y > H) this.speedY *= -1;
     this.draw();
   }
   draw() {
@@ -536,8 +665,9 @@ function connect() {
       const b = particles[j];
       const dx = a.x - b.x;
       const dy = a.y - b.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < LINK_DIST) {
+      const distSq = dx * dx + dy * dy;
+      if (distSq < LINK_DIST_SQ) {
+        const dist = Math.sqrt(distSq);
         ctx.beginPath();
         ctx.strokeStyle = `rgba(190,190,200,${1 - dist / LINK_DIST})`;
         ctx.lineWidth = 0.8;
@@ -549,8 +679,9 @@ function connect() {
     if (mouse.x !== null && mouse.y !== null) {
       const dxm = a.x - mouse.x;
       const dym = a.y - mouse.y;
-      const distm = Math.sqrt(dxm * dxm + dym * dym);
-      if (distm < MOUSE_DIST) {
+      const distmSq = dxm * dxm + dym * dym;
+      if (distmSq < MOUSE_DIST_SQ) {
+        const distm = Math.sqrt(distmSq);
         ctx.beginPath();
         ctx.strokeStyle = `rgba(225,225,230,${1 - distm / MOUSE_DIST})`;
         ctx.lineWidth = 1;
@@ -563,7 +694,7 @@ function connect() {
 }
 
 function animate() {
-  ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  ctx.clearRect(0, 0, W, H);
   particles.forEach(p => p.update());
   connect();
   requestAnimationFrame(animate);
@@ -575,7 +706,11 @@ if (prefersReducedMotion) {
   animate();
 }
 
-window.addEventListener('resize', resizeCanvas);
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(resizeCanvas, 150);
+});
 window.addEventListener('mousemove', e => {
   mouse.x = e.x;
   mouse.y = e.y;
