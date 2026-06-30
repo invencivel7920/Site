@@ -26,6 +26,7 @@
 
   * { box-sizing: border-box; }
 
+  /* MELHORIA 14: body flex para footer fixo no fim */
   body {
     margin: 0;
     font-family: 'Pixelify Sans', monospace;
@@ -34,6 +35,54 @@
     color: var(--text);
     overflow-x: hidden;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* MELHORIA 14: main ocupa todo espaço disponível */
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* MELHORIA 1: Fundo Aurora (frente) */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(255,79,160,.12), transparent 35%),
+      radial-gradient(circle at 80% 70%, rgba(78,255,143,.10), transparent 40%),
+      radial-gradient(circle at 50% 100%, rgba(90,120,255,.08), transparent 45%);
+    filter: blur(70px);
+    animation: aurora 18s linear infinite alternate;
+  }
+
+  @keyframes aurora {
+    0%   { transform: translate(-5%, -5%) rotate(0deg); }
+    100% { transform: translate(8%, 4%) rotate(180deg); }
+  }
+
+  /* MELHORIA 16: Aurora de fundo (atrás das partículas) */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: -40%;
+    z-index: -3;
+    background:
+      radial-gradient(circle, #ff4fa022, transparent 40%),
+      radial-gradient(circle, #4eff8f22, transparent 40%),
+      radial-gradient(circle, #6b7cff22, transparent 40%);
+    filter: blur(90px);
+    animation: fundo 22s linear infinite alternate;
+  }
+
+  @keyframes fundo {
+    0%   { transform: translate(-10%, -10%) rotate(0); }
+    100% { transform: translate(10%, 10%) rotate(180deg); }
   }
 
   canvas#particles {
@@ -46,13 +95,21 @@
   a { color: var(--accent); text-decoration: none; }
 
   /* ---------- Cabeçalho ---------- */
+  /* MELHORIA 15: Animação ao carregar */
   header {
     text-align: center;
     padding: clamp(38px, 9vw, 56px) 20px clamp(20px, 5vw, 28px);
     background: linear-gradient(180deg, rgba(17,17,20,0.9), rgba(17,17,20,0.4));
     border-bottom: 1px solid rgba(255, 79, 160, 0.4);
     box-shadow: 0 6px 30px -12px rgba(255, 79, 160, 0.45);
+    animation: entrada .8s ease;
   }
+
+  @keyframes entrada {
+    from { opacity: 0; transform: translateY(-40px); }
+    to   { opacity: 1; transform: none; }
+  }
+
   header h1 {
     font-size: clamp(1.6em, 7vw, 2.6em);
     font-weight: 700;
@@ -68,7 +125,7 @@
     margin: 0;
   }
 
-  /* ---------- Botões de redes sociais (sempre visíveis) ---------- */
+  /* ---------- Botões de redes sociais ---------- */
   .socials {
     display: flex;
     flex-wrap: wrap;
@@ -95,11 +152,14 @@
     position: relative;
   }
   .social-btn .icon { font-size: 1.3em; line-height: 1; }
+
+  /* MELHORIA 11: Botões mais bonitos no hover */
   .social-btn:hover,
   .social-btn:focus-visible {
     border-color: var(--accent);
     background: rgba(255, 79, 160, 0.12);
-    transform: translateY(-2px);
+    transform: translateY(-4px) scale(1.04);
+    box-shadow: 0 0 25px rgba(255, 79, 160, 0.35);
   }
   .social-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
@@ -108,6 +168,8 @@
   .social-btn.secondary:focus-visible {
     border-color: var(--secondary);
     background: rgba(78, 255, 143, 0.12);
+    transform: translateY(-4px) scale(1.04);
+    box-shadow: 0 0 25px rgba(78, 255, 143, 0.35);
   }
   .social-btn.secondary:focus-visible { outline: 2px solid var(--secondary); }
 
@@ -154,23 +216,50 @@
   nav button.active { background: var(--secondary); color: #0a0a0d; border-color: var(--secondary); }
 
   /* ---------- Seções ---------- */
+  /* MELHORIA 10: Fade nas abas */
   section {
     max-width: 700px;
     margin: 0 auto;
     padding: clamp(14px, 4vw, 24px);
     display: none;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .35s, transform .35s;
   }
-  section.active { display: block; animation: fadeIn 0.35s ease; }
+  section.active {
+    display: block;
+    opacity: 1;
+    transform: none;
+  }
   #repos { max-width: 960px; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
+  /* MELHORIA 2: Glassmorphism melhorado */
   .card {
-    background: var(--panel);
-    border: 1px solid rgba(255,79,160,0.25);
+    background: rgba(20, 20, 28, .55);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, .08);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, .35);
     border-radius: var(--radius-lg);
     padding: clamp(18px, 4vw, 24px);
-    backdrop-filter: blur(6px);
+    position: relative;
+    overflow: hidden;
   }
+
+  /* MELHORIA 3: Brilho nas bordas dos cards */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 79, 160, .2),
+      transparent,
+      rgba(78, 255, 143, .2)
+    );
+    z-index: -1;
+  }
+
   section h2 { color: var(--accent); font-size: 1em; margin-top: 0; }
   section p, section li { font-size: 0.7em; line-height: 2; color: var(--text); font-family: system-ui, sans-serif; }
   section ul { list-style: none; padding: 0; margin: 0; }
@@ -212,7 +301,7 @@
     position: relative;
     display: block;
     background: var(--panel);
-    border: 1px solid rgba(255,79,160,0.2);
+    border: 1px solid rgba(255, 79, 160, 0.2);
     border-radius: var(--radius-lg);
     padding: 18px;
     backdrop-filter: blur(6px);
@@ -221,11 +310,15 @@
     overflow: hidden;
     cursor: pointer;
   }
+
+  /* MELHORIA 17: Brilho ao passar o mouse nos repositórios */
   .repo-card:hover,
   .repo-card:focus-visible {
     border-color: var(--secondary);
     transform: translateY(-3px);
-    box-shadow: 0 10px 28px -12px rgba(78, 255, 143, 0.35);
+    box-shadow:
+      0 12px 35px rgba(78, 255, 143, .25),
+      0 0 18px rgba(255, 79, 160, .18);
   }
   .repo-card:focus-visible { outline: 2px solid var(--secondary); outline-offset: 2px; }
   .repo-card h3 {
@@ -278,7 +371,7 @@
     font-size: 0.74em;
     line-height: 1.7;
     color: var(--text);
-    border-top: 1px dashed rgba(255,255,255,0.14);
+    border-top: 1px dashed rgba(255, 255, 255, 0.14);
     padding-top: 10px;
     white-space: pre-wrap;
     border-radius: 0 0 var(--radius-sm) var(--radius-sm);
@@ -343,19 +436,28 @@
   @media (prefers-reduced-motion: reduce) {
     .philo-refresh:hover { transform: none; }
   }
+
+  /* MELHORIA 13: Footer sempre no fim */
   footer {
     text-align: center;
     padding: clamp(18px, 5vw, 26px) 16px;
-    margin-top: 30px;
-    background: rgba(17,17,20,0.7);
+    margin-top: auto;
+    background: rgba(17, 17, 20, 0.7);
     border-top: 1px solid rgba(255, 79, 160, 0.4);
     box-shadow: 0 -6px 30px -16px rgba(255, 79, 160, 0.4);
     font-size: 0.6em;
     color: var(--text-dim);
   }
 
+  /* MELHORIA 12: Scrollbar customizada */
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: #111; }
+  ::-webkit-scrollbar-thumb { background: #ff4fa0; border-radius: 20px; }
+
   @media (prefers-reduced-motion: reduce) {
     section.active { animation: none; }
+    body::before, body::after { animation: none; }
+    header { animation: none; }
   }
 
   @media (max-width: 480px) {
@@ -364,6 +466,13 @@
     .repos-stats { gap: 8px; }
     .repo-card h3 { padding-right: 0; }
     .repo-lang-badge { position: static; display: inline-flex; opacity: 1; transform: none; margin-bottom: 8px; border-radius: var(--radius-sm); }
+  }
+
+  /* MELHORIA 18: Melhor responsividade para telas grandes */
+  @media (min-width: 1400px) {
+    section { max-width: 1100px; }
+    .repos-grid { grid-template-columns: repeat(3, 1fr); }
+    header { padding-top: 80px; padding-bottom: 60px; }
   }
 </style>
 </head>
@@ -376,54 +485,56 @@
   <p>invencivel7920 · he/him<br>Just a dumb profile for a dumb person</p>
 </header>
 
-<div class="philo-quote">
-  <blockquote id="philoText">Conhece-te a ti mesmo.<cite id="philoAuthor">— Sócrates</cite></blockquote>
-  <button class="philo-refresh" id="philoRefresh" type="button" aria-label="Nova frase">🔁</button>
-</div>
-
-<div class="socials">
-  <a class="social-btn" href="https://instagram.com/aquil_esbatista" target="_blank" rel="noopener noreferrer">
-    <span class="icon">📷</span> Instagram
-  </a>
-  <button class="social-btn secondary" id="discordBtn" type="button">
-    <span class="icon">🎮</span> Discord
-    <span class="toast" id="discordToast">copiado: mr.wpnz6381</span>
-  </button>
-  <a class="social-btn secondary" href="https://github.com/invencivel7920" target="_blank" rel="noopener noreferrer">
-    <span class="icon">💻</span> GitHub
-  </a>
-</div>
-
-<nav>
-  <button onclick="showSection('sobre', this)" class="active">Sobre</button>
-  <button onclick="showSection('contato', this)">Contato</button>
-  <button onclick="showSection('repos', this); loadRepos();">Repositórios</button>
-</nav>
-
-<section id="sobre" class="active">
-  <div class="card">
-    <h2>Sobre Mim</h2>
-    <p>Oi! Eu sou Mr.WPNZ, também conhecido como invencivel7920. Curto tecnologia, games e programação. Não levo a vida muito a sério, mas tento fazer coisas legais.</p>
+<main>
+  <div class="philo-quote">
+    <blockquote id="philoText">Conhece-te a ti mesmo.<cite id="philoAuthor">— Sócrates</cite></blockquote>
+    <button class="philo-refresh" id="philoRefresh" type="button" aria-label="Nova frase">🔁</button>
   </div>
-</section>
 
-<section id="contato">
-  <div class="card">
-    <h2>Contato</h2>
-    <ul>
-      <li>📷 Instagram: <a href="https://instagram.com/aquil_esbatista" target="_blank" rel="noopener noreferrer">@aquil_esbatista</a></li>
-      <li>🎮 Discord: mr.wpnz6381 <em style="color:var(--text-dim); font-style:normal;">(clique no botão acima para copiar)</em></li>
-      <li>💻 GitHub: <a href="https://github.com/invencivel7920" target="_blank" rel="noopener noreferrer">invencivel7920</a></li>
-    </ul>
+  <div class="socials">
+    <a class="social-btn" href="https://instagram.com/aquil_esbatista" target="_blank" rel="noopener noreferrer">
+      <span class="icon">📷</span> Instagram
+    </a>
+    <button class="social-btn secondary" id="discordBtn" type="button">
+      <span class="icon">🎮</span> Discord
+      <span class="toast" id="discordToast">copiado: mr.wpnz6381</span>
+    </button>
+    <a class="social-btn secondary" href="https://github.com/invencivel7920" target="_blank" rel="noopener noreferrer">
+      <span class="icon">💻</span> GitHub
+    </a>
   </div>
-</section>
 
-<section id="repos">
-  <h2>Repositórios Públicos</h2>
-  <div class="repos-stats" id="reposStats"></div>
-  <div class="repos-status" id="reposStatus">Clique aqui para carregar os repositórios do GitHub…</div>
-  <div class="repos-grid" id="reposGrid"></div>
-</section>
+  <nav>
+    <button onclick="showSection('sobre', this)" class="active">Sobre</button>
+    <button onclick="showSection('contato', this)">Contato</button>
+    <button onclick="showSection('repos', this); loadRepos();">Repositórios</button>
+  </nav>
+
+  <section id="sobre" class="active">
+    <div class="card">
+      <h2>Sobre Mim</h2>
+      <p>Oi! Eu sou Mr.WPNZ, também conhecido como invencivel7920. Curto tecnologia, games e programação. Não levo a vida muito a sério, mas tento fazer coisas legais.</p>
+    </div>
+  </section>
+
+  <section id="contato">
+    <div class="card">
+      <h2>Contato</h2>
+      <ul>
+        <li>📷 Instagram: <a href="https://instagram.com/aquil_esbatista" target="_blank" rel="noopener noreferrer">@aquil_esbatista</a></li>
+        <li>🎮 Discord: mr.wpnz6381 <em style="color:var(--text-dim); font-style:normal;">(clique no botão acima para copiar)</em></li>
+        <li>💻 GitHub: <a href="https://github.com/invencivel7920" target="_blank" rel="noopener noreferrer">invencivel7920</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="repos">
+    <h2>Repositórios Públicos</h2>
+    <div class="repos-stats" id="reposStats"></div>
+    <div class="repos-status" id="reposStatus">Clique aqui para carregar os repositórios do GitHub…</div>
+    <div class="repos-grid" id="reposGrid"></div>
+  </section>
+</main>
 
 <footer>
   © 2025 Mr.WPNZ
@@ -462,7 +573,7 @@ document.getElementById('philoRefresh').addEventListener('click', showRandomQuot
 showRandomQuote();
 
 // -----------------------
-// Panorama de repositórios públicos (API do GitHub)
+// Repositórios GitHub
 // -----------------------
 const GITHUB_USER = 'invencivel7920';
 const README_PREVIEW_LEN = 220;
@@ -474,14 +585,13 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
-// Remove marcação markdown básica (imagens, links, headers, ênfase, code) pra mostrar só texto corrido
 function cleanReadme(md) {
   return md
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')      // imagens
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')   // [texto](link) -> texto
-    .replace(/^#+\s*/gm, '')                   // headers
-    .replace(/[`*_>~]/g, '')                   // marcação simples
-    .replace(/<[^>]+>/g, '')                   // tags HTML soltas
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/^#+\s*/gm, '')
+    .replace(/[`*_>~]/g, '')
+    .replace(/<[^>]+>/g, '')
     .replace(/\r/g, '')
     .replace(/\n{2,}/g, '\n')
     .trim();
@@ -507,9 +617,7 @@ async function loadRepos() {
       fetch(`https://api.github.com/users/${GITHUB_USER}/repos?type=owner&sort=updated&per_page=100`)
     ]);
 
-    if (!userRes.ok || !reposRes.ok) {
-      throw new Error('A API do GitHub limitou ou recusou a requisição.');
-    }
+    if (!userRes.ok || !reposRes.ok) throw new Error('A API do GitHub limitou ou recusou a requisição.');
 
     const user = await userRes.json();
     let repos = await reposRes.json();
@@ -530,10 +638,7 @@ async function loadRepos() {
       .sort((a, b) => b.stargazers_count - a.stargazers_count || new Date(b.updated_at) - new Date(a.updated_at))
       .slice(0, 6);
 
-    if (featured.length === 0) {
-      statusEl.textContent = 'Nenhum repositório público encontrado.';
-      return;
-    }
+    if (featured.length === 0) { statusEl.textContent = 'Nenhum repositório público encontrado.'; return; }
     statusEl.textContent = '';
 
     gridEl.innerHTML = featured.map(repo => `
@@ -549,7 +654,6 @@ async function loadRepos() {
       </a>
     `).join('');
 
-    // Busca o início do README de cada repositório em paralelo
     featured.forEach(async repo => {
       const target = document.getElementById(`readme-${repo.id}`);
       try {
@@ -560,14 +664,14 @@ async function loadRepos() {
         const raw = await res.text();
         const preview = truncate(cleanReadme(raw), README_PREVIEW_LEN);
         target.textContent = preview || 'README vazio.';
-      } catch (e) {
+      } catch {
         target.textContent = 'Sem README disponível.';
       } finally {
         target.classList.remove('loading');
       }
     });
 
-  } catch (err) {
+  } catch {
     statusEl.textContent = 'Não foi possível carregar os repositórios agora (a API pública do GitHub tem limite de requisições por hora). Tente novamente em alguns minutos.';
   }
 }
@@ -583,7 +687,7 @@ function showSection(id, btn) {
 }
 
 // -----------------------
-// Botão Discord: copiar usuário
+// Discord: copiar usuário
 // -----------------------
 const discordBtn = document.getElementById('discordBtn');
 const discordToast = document.getElementById('discordToast');
@@ -591,8 +695,7 @@ discordBtn.addEventListener('click', async () => {
   const username = 'mr.wpnz6381';
   try {
     await navigator.clipboard.writeText(username);
-  } catch (e) {
-    // Fallback para navegadores sem suporte à Clipboard API
+  } catch {
     const temp = document.createElement('textarea');
     temp.value = username;
     document.body.appendChild(temp);
@@ -605,7 +708,7 @@ discordBtn.addEventListener('click', async () => {
 });
 
 // -----------------------
-// Configuração do canvas de partículas
+// Canvas de partículas
 // -----------------------
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
@@ -627,8 +730,12 @@ resizeCanvas();
 const mouse = { x: null, y: null };
 const particles = [];
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const PARTICLE_COUNT = window.innerWidth < 600 ? 55 : 110;
-const LINK_DIST = 120;
+
+// MELHORIA 4: Mais partículas
+const PARTICLE_COUNT = window.innerWidth < 700 ? 140 : 260;
+
+// MELHORIA 5: Conexões maiores
+const LINK_DIST = 180;
 const LINK_DIST_SQ = LINK_DIST * LINK_DIST;
 const MOUSE_DIST = 150;
 const MOUSE_DIST_SQ = MOUSE_DIST * MOUSE_DIST;
@@ -652,7 +759,11 @@ class Particle {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(190,190,200,0.8)';
+    // MELHORIA 7: Partículas brilhando
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = 'white';
     ctx.fill();
+    ctx.shadowBlur = 0; // reset para não vazar no stroke
   }
 }
 
@@ -669,7 +780,8 @@ function connect() {
       if (distSq < LINK_DIST_SQ) {
         const dist = Math.sqrt(distSq);
         ctx.beginPath();
-        ctx.strokeStyle = `rgba(190,190,200,${1 - dist / LINK_DIST})`;
+        // MELHORIA 6: Conexões mais visíveis
+        ctx.strokeStyle = `rgba(220,220,235,${0.5 - (dist / LINK_DIST) * 0.4})`;
         ctx.lineWidth = 0.8;
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(b.x, b.y);
@@ -711,24 +823,28 @@ window.addEventListener('resize', () => {
   clearTimeout(resizeTimeout);
   resizeTimeout = setTimeout(resizeCanvas, 150);
 });
-window.addEventListener('mousemove', e => {
-  mouse.x = e.x;
-  mouse.y = e.y;
-});
-window.addEventListener('mouseleave', () => {
-  mouse.x = null;
-  mouse.y = null;
-});
-// Suporte básico a toque (conecta no ponto tocado)
+window.addEventListener('mousemove', e => { mouse.x = e.x; mouse.y = e.y; });
+window.addEventListener('mouseleave', () => { mouse.x = null; mouse.y = null; });
 window.addEventListener('touchmove', e => {
-  if (e.touches[0]) {
-    mouse.x = e.touches[0].clientX;
-    mouse.y = e.touches[0].clientY;
-  }
+  if (e.touches[0]) { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; }
 }, { passive: true });
-window.addEventListener('touchend', () => {
-  mouse.x = null;
-  mouse.y = null;
+window.addEventListener('touchend', () => { mouse.x = null; mouse.y = null; });
+
+// MELHORIA 8: Cabeçalho parallax no scroll
+window.addEventListener('scroll', () => {
+  document.querySelector('header').style.transform = `translateY(${scrollY * .25}px)`;
+});
+
+// MELHORIA 9: Cards de repositório inclinando com o mouse
+document.addEventListener('mousemove', e => {
+  document.querySelectorAll('.repo-card').forEach(card => {
+    const r = card.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    const ry = (x - r.width / 2) / 18;
+    const rx = (r.height / 2 - y) / 18;
+    card.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+  });
 });
 </script>
 
